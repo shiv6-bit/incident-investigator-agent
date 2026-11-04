@@ -28,11 +28,7 @@ import tools
 
 load_dotenv()
 
-# Free Gemini model. Change in .env (MODEL=...) if you hit rate limits or the name changes.
-MODEL = os.getenv("MODEL", "google:gemini-3.7-flash")
-# PydanticAI's Google provider reads GEMINI_API_KEY (older) or GOOGLE_API_KEY (newer).
-if os.getenv("GEMINI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
-    os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
+MODEL = os.getenv("MODEL", "groq:qwen/qwen3.8-27b")
 
 DEFAULT_QUESTION = "Why did our payment API errors spike yesterday afternoon, and what should we do?"
 
@@ -78,7 +74,7 @@ Rules:
 
 agent = Agent(MODEL, output_type=IncidentReport, system_prompt=SYSTEM_PROMPT, retries=2)
 for fn in tools.ALL_TOOLS:
-    agent.tool_plain(fn)  # register each function as a tool the LLM may call
+    agent.tool_plain(fn)  
 
 
 # ---------------------------------------------------------------------------
@@ -108,7 +104,7 @@ def print_trace(result) -> None:
             if isinstance(part, ToolCallPart) and not part.tool_name.startswith("final_result"):
                 step += 1
                 print(f"{step}. {part.tool_name}({part.args})")
-    print(f"\nTotal LLM requests: {result.usage().requests}")
+   print(f"\nTotal LLM requests: {result.usage.requests}")
 
 
 def print_report(r: IncidentReport) -> None:

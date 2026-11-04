@@ -40,10 +40,7 @@ def _service_df(service: str) -> tuple[pd.DataFrame | None, dict | None]:
 def _fmt(ts: pd.Timestamp) -> str:
     return ts.strftime("%Y-%m-%d %H:%M")
 
-
-# --------------------------------------------------------------------------
-# Tool 1: orient yourself
-# --------------------------------------------------------------------------
+# Tool 1: orient 
 def get_data_overview() -> dict:
     """Describe the log data that is available: time range, services and row count.
 
@@ -59,10 +56,7 @@ def get_data_overview() -> dict:
         "error_definition": "A request is an error when status_code >= 400.",
     }
 
-
-# --------------------------------------------------------------------------
 # Tool 2: statistics
-# --------------------------------------------------------------------------
 def error_rate_by_hour(service: str, date: str | None = None) -> dict:
     """Hourly request count and error rate (%) for one service.
 
@@ -142,11 +136,7 @@ def detect_spike(service: str) -> dict:
         "spike_windows": out,
         "note": "No abnormal spike found." if not out else f"{len(out)} spike window(s) found.",
     }
-
-
-# --------------------------------------------------------------------------
 # Tool 3: drill down
-# --------------------------------------------------------------------------
 def top_errors(service: str, start: str, end: str) -> dict:
     """Break down the errors of one service inside a time window.
 
@@ -202,11 +192,7 @@ def deploy_history(service: str) -> dict:
             {"version": v, "first_seen": _fmt(r["min"]), "last_seen": _fmt(r["max"])} for v, r in g.iterrows()
         ],
     }
-
-
-# --------------------------------------------------------------------------
 # Tool 4: outside knowledge
-# --------------------------------------------------------------------------
 def web_search(query: str, max_results: int = 3) -> dict:
     """Search the web (DuckDuckGo) for known causes, fixes or documentation.
 

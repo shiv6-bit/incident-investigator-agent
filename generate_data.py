@@ -23,7 +23,6 @@ import pandas as pd
 OUT_PATH = Path(__file__).parent / "data" / "logs.csv"
 START = datetime(2026, 11, 1, 0, 0, 0)
 HOURS = 48
-
 # error_type -> HTTP status code
 STATUS_FOR = {
     "VALIDATION_ERROR": 400,
@@ -33,7 +32,6 @@ STATUS_FOR = {
     "DB_CONNECTION_TIMEOUT": 503,
     "UPSTREAM_TIMEOUT": 504,
 }
-
 # service -> (requests per hour at peak, normal error rate, normal error mix)
 SERVICES = {
     "payment-api": (140, 0.015, {"VALIDATION_ERROR": 0.6, "INTERNAL_ERROR": 0.4}),

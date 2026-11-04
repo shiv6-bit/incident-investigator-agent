@@ -1,14 +1,14 @@
-# Incident Investigator Agent
+#Incident Investigator Agent
 
-An autonomous agent that investigates a production incident from a plain-English question and returns a **structured, validated report**: probable root cause, evidence, what was ruled out, confidence, and next steps.
+An autonomous agent that investigates a production incident from a plain-English question and returns a structured, validated report: probable root cause, evidence, what was ruled out, confidence, and next steps.
 
 > "Why did our payment API errors spike yesterday afternoon?" -> the agent finds the spike, drills into the errors, checks deploys, searches the web for known causes, and writes the report.
 
 Built with PydanticAI (agent loop + typed output) and the Groq API using a Qwen model. The project uses synthetic logs and free-tier API access where available.
 
-## The problem
+#The problem
 
-When something breaks in production, an on-call engineer spends the first 20-30 minutes on repetitive detective work: *when did it start? which service? what kind of errors? did we just deploy? has anyone seen this before?* This agent automates that first pass so a human starts with evidence instead of a blank page.
+When something breaks in production, an on-call engineer spends the first 20-30 minutes on repetitive detective work: when did it start? which service? what kind of errors? did we just deploy? has anyone seen this before?* This agent automates that first pass so a human starts with evidence instead of a blank page.
 
 ## How it works
 
@@ -39,20 +39,20 @@ When something breaks in production, an on-call engineer spends the first 20-30 
 | `deploy_history` | drill-down | tests the "did a deploy cause it?" hypothesis |
 | `web_search` | external | outside knowledge on known causes and fixes |
 
-### Design decisions
+## Design decisions
 
-- **The LLM decides the order of tool calls; the code decides what the tools compute.** Numbers come from deterministic pandas code, never from the LLM, so it cannot hallucinate statistics.
-- **Typed output with Pydantic.** The report must match `IncidentReport`; `confidence` can only be `low | medium | high`. Downstream systems (tickets, Slack) can rely on the shape.
-- **Robust spike detection.** An hourly error rate is noisy when traffic is low. `detect_spike` compares each hour to what *random chance* would produce at that traffic level (binomial z-score > 5) and also requires a lift of at least 3 percentage points. My first version (median/MAD) flagged a random 1-hour blip, which is why I changed it.
-- **Guardrails.** A 15-request cap per question stops runaway loops; tools return `{"error": ...}` instead of crashing so the model can self-correct; the prompt forbids invented numbers and warns that correlation is not proof.
-- **Synthetic data with a hidden story** (including a red herring) so the agent's reasoning can be checked against a known answer.
+- The LLM decides the order of tool calls; the code decides what the tools compute. Numbers come from deterministic pandas code, never from the LLM, so it cannot hallucinate statistics.
+- Typed output with Pydantic. The report must match `IncidentReport`; `confidence` can only be `low | medium | high`. Downstream systems (tickets, Slack) can rely on the shape.
+- Robust spike detection. An hourly error rate is noisy when traffic is low. `detect_spike` compares each hour to what *random chance* would produce at that traffic level (binomial z-score > 5) and also requires a lift of at least 3 percentage points. My first version (median/MAD) flagged a random 1-hour blip, which is why I changed it.
+- Guardrails.A 15-request cap per question stops runaway loops; tools return `{"error": ...}` instead of crashing so the model can self-correct; the prompt forbids invented numbers and warns that correlation is not proof.
+- Synthetic data with a hidden story (including a red herring) so the agent's reasoning can be checked against a known answer.
 
 ## Setup
 
 Requires Python 3.10+.
 
 ```bash
-git clone <https://github.com/shiv6-bit/incident-investigator-agent.git>
+git clone https://github.com/shiv6-bit/incident-investigator-agent.git
 cd incident-investigator-agent
 
 python -m venv .venv
@@ -77,7 +77,7 @@ GROQ_API_KEY=your_groq_api_key
 MODEL=groq:qwen/qwen3.8-27b
 ```
 
-## Run
+#Run
 
 ```bash
 python generate_data.py       # creates data/logs.csv (already included; deterministic)
@@ -90,7 +90,7 @@ pytest -q                     # tests for the tools (no API key or internet need
 The output shows each tool call the agent made, then the final report.
 ## Example run
 
-Question: Why did our payment API errors spike yesterday afternoon, and what should we do?
+Question: Why did our payment API errors spike November 2 afternoon, and what should we do?
 
 The agent investigated the logs and found an issue with the payment-api service on 2 November 2026, between 14:00 and 18:00.
 
@@ -109,7 +109,7 @@ It recommended rolling back to v2.4.0, checking database connection settings and
 
 The investigation used data overview, spike detection, error analysis, deployment history and web search tools.
 
-## The synthetic scenario (so you can check the agent's answer)
+#The synthetic scenario (so you can check the agent's answer)
 
 - `payment-api` deploys **v2.4.1 at 13:45** on 2026-11-02.
 - From **14:00 to 18:00** its error rate jumps from ~1.5% to ~26%, mostly `DB_CONNECTION_TIMEOUT` (HTTP 503), with latency about 4x higher.
