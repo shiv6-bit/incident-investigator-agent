@@ -1,0 +1,5 @@
+pydantic-ai-slim[groq]>=1.0 
+ddgs
+pandas>=2.2
+python-dotenv
+pytest
